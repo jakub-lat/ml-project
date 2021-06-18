@@ -1,16 +1,21 @@
+import json
 from comet_ml import Experiment
 import torch.cuda
 import data_loader as data
 import trainer as trainer
 from model import model, loss
-import json
 
 
-def train(experiment, data_path, batch_size, n_epochs, lr, check_every, test_batches, **kwargs):
+def train(experiment, data_path, batch_size, n_epochs, lr, check_every, test_batches, checkpoint_path=None, **kwargs):
     torch.cuda.empty_cache()
     (train_set, test_set), (train_loader, test_loader) = data.load_data(data_path, batch_size)
     criterion = loss.get_loss()
     net = model.Net(len(train_set.classes)).type(torch.float32)
+
+    if checkpoint_path is not None:
+        print(f'loading saved model')
+        net.load_state_dict(torch.load(checkpoint_path))
+        net.eval()
 
     trainer.train(net,
                   train_loader=train_loader,
@@ -21,8 +26,7 @@ def train(experiment, data_path, batch_size, n_epochs, lr, check_every, test_bat
                   n_epochs=n_epochs,
                   lr=lr,
                   check_every=check_every,
-                  test_batches=test_batches,
-                  )
+                  test_batches=test_batches)
 
 
 if __name__ == '__main__':

@@ -2,13 +2,16 @@ import torch
 import torch.optim as optim
 from comet_ml import Experiment
 
-from model.metric import calculate_accuracy
+from model.metric import get_model_accuracy
 
 
 def train(net, train_loader, test_loader, criterion, device, experiment: Experiment, n_epochs, lr, check_every,
           test_batches):
     net = net.to(device)
     optimizer = optim.Adam(net.parameters(), lr=lr)
+
+    best_acc = get_model_accuracy(net, test_loader, test_batches, device)
+    print(f'starting accuracy: {best_acc*100:.2f}%')
 
     for epoch in range(n_epochs):
         running_loss = 0.0
@@ -30,21 +33,16 @@ def train(net, train_loader, test_loader, criterion, device, experiment: Experim
             experiment.log_metric('one_batch_loss', loss.item())
 
             if n_batches % check_every == check_every - 1:
-                with torch.no_grad():
-                    i = 0
-                    running_accuracy = 0.0
-                    for data, labels in test_loader:
-                        if i == test_batches:
-                            break
+                acc = get_model_accuracy(net, test_loader, test_batches, device)
+                if acc > best_acc:
+                    best_acc = acc
+                    torch.save(net.state_dict(), f'saved_models/model.pth')
+                    print(f'saved new model with {acc * 100:.2f}% accuracy')
 
-                        preds = net(data.to(device))
-                        running_accuracy += calculate_accuracy(preds, labels.to(device))
-                        i += 1
+                experiment.log_metric('interval_mean_loss', running_loss / check_every)
+                experiment.log_metric('interval_accuracy', acc * 100)
 
-                    experiment.log_metric('interval_mean_loss', running_loss / check_every)
-                    experiment.log_metric('interval_accuracy', running_accuracy / i)
-
-                    running_loss = 0.0
-                    n_batches = 0
+                running_loss = 0.0
+                n_batches = 0
 
             n_batches += 1

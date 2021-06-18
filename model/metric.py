@@ -1,5 +1,21 @@
 import torch
 
+
+def get_model_accuracy(net, test_loader, test_batches, device):
+    with torch.no_grad():
+        i = 0
+        running_accuracy = 0.0
+        for data, labels in test_loader:
+            if i == test_batches:
+                break
+
+            preds = net(data.to(device))
+            running_accuracy += calculate_accuracy(preds, labels.to(device))
+            i += 1
+
+        return running_accuracy / test_batches
+
+
 def calculate_accuracy(output: torch.Tensor, target: torch.Tensor) -> float:
     with torch.no_grad():
         pred = torch.argmax(output, dim=1)
