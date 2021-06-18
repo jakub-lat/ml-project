@@ -27,7 +27,7 @@ def train(net, train_loader, test_loader, criterion, device, experiment: Experim
             running_loss += loss.item()
             experiment.log_metric('one_batch_loss', loss.item())
 
-            if i % check_every == check_every - 1:
+            if i % check_every == 0:
                 with torch.no_grad():
 
                     i = 0
