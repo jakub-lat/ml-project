@@ -1,12 +1,14 @@
+import torch
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
 
 
-def load_data(root):
-    transform = transforms.Compose(
-        transforms.ToTensor()
-    )
+def load_data(root, batch_size):
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        lambda x: x.type(torch.float32)
+    ])
 
     train_set = ImageFolder(
         root + "/Training",
@@ -15,7 +17,7 @@ def load_data(root):
 
     train_loader = DataLoader(
         train_set,
-        batch_size=64,
+        batch_size=batch_size,
         shuffle=True
     )
 
@@ -26,7 +28,7 @@ def load_data(root):
 
     test_loader = DataLoader(
         test_set,
-        batch_size=64,
+        batch_size=batch_size,
         shuffle=True
     )
 

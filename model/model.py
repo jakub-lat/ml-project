@@ -14,18 +14,21 @@ class Net(nn.Module):
             nn.BatchNorm2d(32),
             nn.ReLU(),
 
-            nn.Conv2d(32, 64, kernel_size=(5, 5)),
-            nn.BatchNorm2d(64),
-            nn.ReLU(),
+            # nn.Conv2d(32, 64, kernel_size=(5, 5)),
+            # nn.BatchNorm2d(64),
+            # nn.ReLU(),
         )
 
         self.fc = nn.Sequential(
-            nn.Linear(64 * 88 * 88, 120),
-            nn.Linear(120, num_classes)
+            nn.Linear(32 * 92 * 92, 60),
+            nn.Linear(60, num_classes)
         )
 
     def forward(self, x):
         x = self.conv(x)
-        x = x.view(-1, 64 * 88 * 88)
+
+        # print(x.shape)
+
+        x = x.view(-1, 32 * 92 * 92)
         x = self.fc(x)
         return x

@@ -1,7 +1,6 @@
 import torch
 
-
-def accuracy(output: torch.Tensor, target: torch.Tensor) -> float:
+def calculate_accuracy(output: torch.Tensor, target: torch.Tensor) -> float:
     with torch.no_grad():
         pred = torch.argmax(output, dim=1)
         assert pred.shape[0] == len(target)
