@@ -15,7 +15,7 @@ def train(experiment, data_path, batch_size, n_epochs, lr, check_every, test_bat
     if checkpoint_path is not None:
         print(f'loading saved model')
         net.load_state_dict(torch.load(checkpoint_path))
-        net.eval()
+        net.train()
 
     trainer.train(net,
                   train_loader=train_loader,
