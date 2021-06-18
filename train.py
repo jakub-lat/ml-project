@@ -3,8 +3,7 @@ import torch.cuda
 import data_loader as data
 import trainer as trainer
 from model import model, loss
-from config import config as cfg
-
+import json
 
 def train(config: dict):
     torch.cuda.empty_cache()
@@ -22,4 +21,5 @@ def train(config: dict):
 
 
 if __name__ == '__main__':
-    train(cfg)
+    config = json.load('config.json')
+    train(config)
