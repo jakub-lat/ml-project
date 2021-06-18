@@ -12,6 +12,8 @@ def train(net, train_loader, test_loader, criterion, device, experiment: Experim
 
     for epoch in range(n_epochs):
         running_loss = 0.0
+        n_batches = 0
+
         for i, (inputs, labels) in enumerate(train_loader):
             inputs = inputs.to(device)
             labels = labels.to(device)
@@ -27,9 +29,8 @@ def train(net, train_loader, test_loader, criterion, device, experiment: Experim
             running_loss += loss.item()
             experiment.log_metric('one_batch_loss', loss.item())
 
-            if i % check_every == 0:
+            if n_batches % check_every == check_every - 1:
                 with torch.no_grad():
-
                     i = 0
                     running_accuracy = 0.0
                     for data, labels in test_loader:
@@ -44,3 +45,6 @@ def train(net, train_loader, test_loader, criterion, device, experiment: Experim
                     experiment.log_metric('interval_accuracy', running_accuracy / i)
 
                     running_loss = 0.0
+                    n_batches = 0
+
+            n_batches += 1
