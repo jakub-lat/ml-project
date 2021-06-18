@@ -3,12 +3,12 @@ import torch.cuda
 import data_loader as data
 import trainer as trainer
 from model import model, loss
-from config import config
+from config import config as cfg
 
 
-def train():
+def train(config: dict):
     torch.cuda.empty_cache()
-    (train_set, test_set), (train_loader, test_loader) = data.load_data('fruits-360', 16)
+    (train_set, test_set), (train_loader, test_loader) = data.load_data(config['data_path'], 16)
     criterion = loss.get_loss()
     net = model.Net(len(train_set.classes)).type(torch.float32)
 
@@ -22,4 +22,4 @@ def train():
 
 
 if __name__ == '__main__':
-    train()
+    train(cfg)
